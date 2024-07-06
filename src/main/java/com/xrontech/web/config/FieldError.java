@@ -1,4 +1,4 @@
-package com.novatechzone.pos.config;
+package com.xrontech.web.config;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

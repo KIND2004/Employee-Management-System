@@ -1,4 +1,4 @@
-package com.xrontech.web.domain.security.dto;
+package com.xrontech.web.domain.employee;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -18,7 +18,6 @@ public class EmployeeDTO {
     @Email
     private String username;
     @NotBlank
-    @Pattern(regexp = "^07[01245678]\\\\d{7}$")
     @Size(min = 10, max = 10)
     private String mobile;
 }

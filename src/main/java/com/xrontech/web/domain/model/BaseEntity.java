@@ -1,4 +1,4 @@
-package com.xrontech.web.model;
+package com.xrontech.web.domain.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;

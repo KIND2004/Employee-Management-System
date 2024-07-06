@@ -1,7 +1,7 @@
-package com.novatechzone.web.domain.security.util;
+package com.xrontech.web.domain.security.util;
 
-import com.novatechzone.web.domain.security.entity.User;
-import com.novatechzone.web.exception.ApplicationCustomException;
+import com.xrontech.web.domain.security.entity.User;
+import com.xrontech.web.exception.ApplicationCustomException;
 import io.fusionauth.jwt.Signer;
 import io.fusionauth.jwt.Verifier;
 import io.fusionauth.jwt.domain.JWT;

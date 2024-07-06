@@ -1,10 +1,12 @@
-package com.novatechzone.web.domain.security.rest;
+package com.xrontech.web.domain.security.rest;
 
-import com.novatechzone.web.domain.security.dto.LogInDTO;
-import com.novatechzone.web.domain.security.dto.AuthResponseDTO;
-import com.novatechzone.web.domain.security.dto.UserDTO;
-import com.novatechzone.web.domain.security.service.AuthService;
-import com.novatechzone.web.dto.ApplicationResponseDTO;
+import com.xrontech.web.domain.security.dto.AuthResponseDTO;
+import com.xrontech.web.domain.security.dto.LogInDTO;
+import com.xrontech.web.domain.security.dto.ResetForgotPasswordDTO;
+import com.xrontech.web.domain.security.service.AuthService;
+import com.xrontech.web.domain.user.ResetPasswordDTO;
+import com.xrontech.web.dto.ApplicationResponseDTO;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,18 +21,34 @@ import org.springframework.web.bind.annotation.*;
 public class AuthResource {
     private final AuthService authService;
 
-    @PostMapping("/signup")
-    public ResponseEntity<ApplicationResponseDTO> signup(@Valid @RequestBody UserDTO userDTO) {
-        return ResponseEntity.ok(authService.signup(userDTO));
-    }
-
     @PostMapping("/login")
     public ResponseEntity<AuthResponseDTO> login(@Valid @RequestBody LogInDTO logInDTO) {
         return ResponseEntity.ok(authService.login(logInDTO));
+    }
+
+    @PostMapping("/forgot-password/{email}")
+    public ResponseEntity<ApplicationResponseDTO> forgotPassword(@PathVariable("email") String email, HttpServletRequest request) {
+        return ResponseEntity.ok(authService.forgotPassword(email, request));
+    }
+
+    @GetMapping("/reset-password/{id}")
+    public ResponseEntity<ApplicationResponseDTO> resetForgotPassword(@PathVariable("id") Long id) {
+        return ResponseEntity.ok(authService.resetForgotPassword(id));
+    }
+
+    @PostMapping("/reset-password/{id}")
+    public ResponseEntity<ApplicationResponseDTO> resetForgotPassword(@PathVariable("id") Long id, @Valid @RequestBody ResetForgotPasswordDTO resetForgotPasswordDTO) {
+        return ResponseEntity.ok(authService.resetForgotPassword(id, resetForgotPasswordDTO));
     }
 
     @PostMapping("/token/refresh/{refresh-token}")
     public ResponseEntity<AuthResponseDTO> refreshAccessToken(@PathVariable("refresh-token") String refreshToken) {
         return ResponseEntity.ok(authService.generateRefreshToken(refreshToken));
     }
+
+    @PutMapping("/reset-password")
+    public ResponseEntity<ApplicationResponseDTO> resetPassword(@Valid @RequestBody ResetPasswordDTO resetPasswordDTO) {
+        return ResponseEntity.ok(authService.resetPassword(resetPasswordDTO));
+    }
+
 }

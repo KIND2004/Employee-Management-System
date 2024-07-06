@@ -1,4 +1,4 @@
-package com.novatechzone.web.domain.security.domain;
+package com.xrontech.web.domain.security.domain;
 
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;

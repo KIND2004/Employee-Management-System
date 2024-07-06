@@ -1,6 +1,7 @@
-package com.xrontech.web.domain.department;
+package com.xrontech.web.domain.job;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,7 +9,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class DepartmentDTO {
+public class JobRoleDTO {
     @NotBlank
-    private String name;
+    private String title;
+    @NotNull
+    private Double salary;
+    @NotNull
+    private Long departmentId;
 }

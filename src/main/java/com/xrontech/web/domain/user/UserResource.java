@@ -1,13 +1,12 @@
-package com.novatechzone.web.domain.user;
+package com.xrontech.web.domain.user;
 
-import com.novatechzone.web.domain.security.entity.User;
-import com.novatechzone.web.dto.ApplicationResponseDTO;
+import com.xrontech.web.domain.security.entity.User;
+import com.xrontech.web.dto.ApplicationResponseDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import org.springframework.web.multipart.MultipartFile;
 
 @RequiredArgsConstructor
 @RestController
@@ -15,13 +14,17 @@ import java.util.List;
 public class UserResource {
     private final UserService userService;
 
+    @GetMapping("/get")
+    public ResponseEntity<User> getProfile() {
+        return ResponseEntity.ok(userService.getProfile());
+    }
     @PutMapping("/update")
     public ResponseEntity<ApplicationResponseDTO> updateUser(@Valid @RequestBody UserUpdateDTO userUpdateDTO) {
         return ResponseEntity.ok(userService.updateUser(userUpdateDTO));
     }
 
-    @GetMapping("/all-users")
-    public ResponseEntity<List<User>> getAllUsers() {
-        return ResponseEntity.ok(userService.getAllUsers());
+    @PutMapping("/update-profile-pic")
+    public ResponseEntity<ApplicationResponseDTO> updateProfilePic(@RequestBody MultipartFile file) {
+        return ResponseEntity.ok(userService.updateProfilePic(file));
     }
 }

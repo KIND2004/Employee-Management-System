@@ -1,4 +1,4 @@
-package com.novatechzone.web.domain.security.dto;
+package com.xrontech.web.domain.security.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

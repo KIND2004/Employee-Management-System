@@ -1,4 +1,4 @@
-package com.xrontech.web.domain.department;
+package com.xrontech.web.domain.job;
 
 import com.xrontech.web.dto.ApplicationResponseDTO;
 import jakarta.validation.Valid;
@@ -10,32 +10,37 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/department")
-public class DepartmentResource {
-    private final DepartmentService departmentService;
+@RequestMapping("/job-role")
+public class JobRoleResource {
+    private final JobRoleService jobRoleService;
 
     @PostMapping("/create")
-    public ResponseEntity<ApplicationResponseDTO> createDepartment(@Valid @RequestBody DepartmentDTO departmentDTO) {
-        return ResponseEntity.ok(departmentService.createDepartment(departmentDTO));
+    public ResponseEntity<ApplicationResponseDTO> createJobRole(@Valid @RequestBody JobRoleDTO jobRoleDTO) {
+        return ResponseEntity.ok(jobRoleService.createJobRole(jobRoleDTO));
     }
 
     @GetMapping("/get")
-    public ResponseEntity<List<Department>> getDepartments() {
-        return ResponseEntity.ok(departmentService.getDepartments());
+    public ResponseEntity<List<JobRole>> getJobRoles() {
+        return ResponseEntity.ok(jobRoleService.getJobRoles());
     }
 
     @GetMapping("/get/{id}")
-    public ResponseEntity<Department> getDepartment(@PathVariable("id") Long id) {
-        return ResponseEntity.ok(departmentService.getDepartment(id));
+    public ResponseEntity<JobRole> getJobRole(@PathVariable("id") Long id) {
+        return ResponseEntity.ok(jobRoleService.getJobRole(id));
     }
 
-    @GetMapping("/get-by-name/{name}")
-    public ResponseEntity<Department> getDepartment(@PathVariable("name") String name) {
-        return ResponseEntity.ok(departmentService.getDepartment(name));
+    @GetMapping("/get/title/{title}")
+    public ResponseEntity<List<JobRole>> getJobRoles(@PathVariable("title") String title) {
+        return ResponseEntity.ok(jobRoleService.getJobRoles(title));
+    }
+
+    @GetMapping("/get/department/{id}")
+    public ResponseEntity<List<JobRole>> getJobRoles(@PathVariable("id") Long departmentId) {
+        return ResponseEntity.ok(jobRoleService.getJobRoles(departmentId));
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<ApplicationResponseDTO> updateDepartment(@PathVariable("id") Long id, @Valid @RequestBody DepartmentDTO departmentDTO) {
-        return ResponseEntity.ok(departmentService.updateDepartment(id, departmentDTO));
+    public ResponseEntity<ApplicationResponseDTO> updateJobRole(@PathVariable("id") Long id, @Valid @RequestBody JobRoleDTO jobRoleDTO) {
+        return ResponseEntity.ok(jobRoleService.updateJobRole(id, jobRoleDTO));
     }
 }

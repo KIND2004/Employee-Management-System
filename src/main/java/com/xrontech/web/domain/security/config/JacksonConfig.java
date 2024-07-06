@@ -1,4 +1,4 @@
-package com.novatechzone.web.domain.security.config;
+package com.xrontech.web.domain.security.config;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.SerializationFeature;

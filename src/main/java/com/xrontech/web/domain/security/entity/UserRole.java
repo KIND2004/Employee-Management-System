@@ -1,6 +1,6 @@
-package com.novatechzone.web.domain.security.entity;
+package com.xrontech.web.domain.security.entity;
 
 public enum UserRole {
-    SUPER_USER,
+    ADMIN,
     USER
 }

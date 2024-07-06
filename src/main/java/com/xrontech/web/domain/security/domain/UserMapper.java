@@ -1,6 +1,6 @@
-package com.novatechzone.web.domain.security.domain;
+package com.xrontech.web.domain.security.domain;
 
-import com.novatechzone.web.domain.security.entity.User;
+import com.xrontech.web.domain.security.entity.User;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -14,7 +14,7 @@ public class UserMapper {
         userData.setUsername(user.getUsername());
         userData.setPassword(user.getPassword());
 
-        SimpleGrantedAuthority grantedAuthority = new SimpleGrantedAuthority(String.valueOf(user.getUserRole()));
+        SimpleGrantedAuthority grantedAuthority = new SimpleGrantedAuthority("ROLE_" + user.getUserRole());
 
         userData.setAuthorities(List.of(grantedAuthority));
         return userData;

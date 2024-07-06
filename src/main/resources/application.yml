@@ -1,1 +1,30 @@
-spring.application.name=Employee Management
+spring:
+  application:
+    name: Employee Management
+  datasource:
+    url: jdbc:postgresql://localhost:5432/employee_management
+    username: postgres
+    password: Abdullah2004*
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  mail:
+    host: "smtp.gmail.com"
+    port: 587
+    username: "abdullahzufar.new@gmail.com"
+    password: "efdglrlonxocjztd"
+    properties:
+      mail:
+        smtp:
+          starttls:
+            enable: true
+        ssl:
+          trust: "*"
+jwt:
+  secret: 1o4RbVqRTa+lEWCx9ZKPNProd7NINpEPB46grgr2mW8=
+  accessTokenLife: 500000000
+  refreshTokenLife: 30
+  issuer: www.abdullahzufar.com
+springdoc:
+  paths-to-match: /**

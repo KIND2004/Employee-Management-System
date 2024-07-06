@@ -1,6 +1,7 @@
-package com.novatechzone.pos.config;
+package com.xrontech.web.config;
 
-import com.novatechzone.pos.exception.ApplicationCustomException;
+import com.xrontech.web.exception.ApplicationCustomException;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
@@ -9,6 +10,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -35,5 +37,15 @@ public class RestExceptionHandler {
         errorResponse.setException(exception.getClass().getSimpleName());
         errorResponse.setMessage(exception.getMessage());
         return new ResponseEntity<>(errorResponse, exception.getStatus());
+    }
+
+    @ExceptionHandler(ResponseStatusException.class)
+    @ApiResponse(responseCode = "4xx/5xx", description = "Error")
+    public ResponseEntity<ErrorResponse> handleNotFound(final ResponseStatusException exception) {
+        final ErrorResponse errorResponse = new ErrorResponse();
+        errorResponse.setHttpStatus(exception.getStatusCode().value());
+        errorResponse.setException(exception.getClass().getSimpleName());
+        errorResponse.setMessage(exception.getMessage());
+        return new ResponseEntity<>(errorResponse, exception.getStatusCode());
     }
 }

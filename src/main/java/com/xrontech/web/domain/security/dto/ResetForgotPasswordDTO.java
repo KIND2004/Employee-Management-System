@@ -1,4 +1,4 @@
-package com.xrontech.web.domain.user;
+package com.xrontech.web.domain.security.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -9,8 +9,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 public class ResetForgotPasswordDTO {
-    @NotBlank
-    private String oldPassword;
     @NotBlank
     private String newPassword;
     @NotBlank

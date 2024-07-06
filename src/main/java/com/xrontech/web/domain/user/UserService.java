@@ -1,41 +1,87 @@
-package com.novatechzone.web.domain.user;
+package com.xrontech.web.domain.user;
 
-import com.novatechzone.web.domain.security.entity.User;
-import com.novatechzone.web.domain.security.entity.UserRole;
-import com.novatechzone.web.domain.security.dto.UserDTO;
-import com.novatechzone.web.domain.security.repos.UserRepository;
-import com.novatechzone.web.domain.security.service.AuthService;
-import com.novatechzone.web.dto.ApplicationResponseDTO;
-import com.novatechzone.web.exception.ApplicationCustomException;
+import com.xrontech.web.domain.security.domain.UserData;
+import com.xrontech.web.domain.security.entity.User;
+import com.xrontech.web.domain.security.repos.UserRepository;
+import com.xrontech.web.dto.ApplicationResponseDTO;
+import com.xrontech.web.exception.ApplicationCustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Optional;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
 public class UserService {
     private final UserRepository userRepository;
 
+    private static final String USER_NOT_FOUND_CODE = "USER_NOT_FOUND";
+    private static final String USER_NOT_FOUND_MSG = "User not Found!";
+
+    public User getProfile() {
+        return getCurrentUser();
+    }
+
     public ApplicationResponseDTO updateUser(UserUpdateDTO userUpdateDTO) {
-        User user = userRepository.findByUsername(AuthService.getCurrentUser())
-                .orElseThrow(() -> new ApplicationCustomException(HttpStatus.BAD_REQUEST, "USER_NOT_FOUND", "User Not Found"));
+        User user = userRepository.findByUsername(getCurrentUser().getUsername())
+                .orElseThrow(() -> new ApplicationCustomException(HttpStatus.NOT_FOUND, USER_NOT_FOUND_CODE, USER_NOT_FOUND_MSG));
 
         user.setName(userUpdateDTO.getName());
 
-        userRepository.findByUsername(userUpdateDTO.getUsername()).ifPresent(existingUser -> {
-            if (!user.getUsername().equals(userUpdateDTO.getUsername())) {
-                throw new ApplicationCustomException(HttpStatus.BAD_REQUEST, "EMAIL_ALREADY_EXISTS", "Email Already Exists");
+        userRepository.findByMobile(userUpdateDTO.getMobile()).ifPresent(existingUser -> {
+            if (!user.getMobile().equals(userUpdateDTO.getMobile())) {
+                throw new ApplicationCustomException(HttpStatus.BAD_REQUEST, "MOBILE_ALREADY_EXISTS", "Mobile Already Exists");
             }
         });
 
-        user.setUsername(userUpdateDTO.getUsername());
+        user.setMobile(userUpdateDTO.getMobile());
+
+        user.setDateOfBirth(userUpdateDTO.getDateOfBirth());
+
         userRepository.save(user);
 
         return new ApplicationResponseDTO(HttpStatus.OK, "USER_UPDATED_SUCCESSFULLY!", "User Updated Successfully!");
+    }
+
+    public ApplicationResponseDTO updateProfilePic(MultipartFile file) {
+        if (file.isEmpty()) {
+            throw new ApplicationCustomException(HttpStatus.NOT_FOUND, "FILE_NOT_SELECTED", "File not Selected");
+        } else {
+            try {
+                String projectRoot = System.getProperty("user.dir");
+                String originalFilename = file.getOriginalFilename();
+                if (originalFilename != null) {
+                    String fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
+
+                    if (!(fileExtension.equalsIgnoreCase(".jpg") || fileExtension.equalsIgnoreCase(".jpeg") || fileExtension.equalsIgnoreCase(".png"))) {
+                        throw new ApplicationCustomException(HttpStatus.BAD_REQUEST, "INVALID_FILE_TYPE", "Invalid file type. Only JPG, JPEG, and PNG are allowed.");
+                    }
+
+                    String newFileName = UUID.randomUUID() + fileExtension;
+                    String imagePath = "/uploads/profiles/" + newFileName;
+                    Path path = Paths.get(projectRoot + imagePath);
+                    File saveFile = new File(String.valueOf(path));
+                    file.transferTo(saveFile);
+                    User user = getCurrentUser();
+                    user.setImageURL(newFileName);
+                    userRepository.save(user);
+                    return new ApplicationResponseDTO(HttpStatus.CREATED, "IMAGE_UPLOADED_SUCCESSFULLY", "Image Uploaded Successfully!");
+                } else {
+                    throw new ApplicationCustomException(HttpStatus.NOT_FOUND, "ORIGINAL_FILE_NAME_NOT_FOUND", "Original File Name Not Found");
+                }
+            } catch (IOException e) {
+                throw new ApplicationCustomException(HttpStatus.BAD_REQUEST, "FILE_NOT_SAVED", "File not Saved");
+            }
+        }
     }
 
     public User findByUsername(String username) {
@@ -43,15 +89,31 @@ public class UserService {
         if (optionalUser.isPresent()) {
             return optionalUser.get();
         } else {
-            throw new ApplicationCustomException(HttpStatus.UNAUTHORIZED, "USER_NOT_FOUND", "User not found");
+            throw new ApplicationCustomException(HttpStatus.NOT_FOUND, USER_NOT_FOUND_CODE, USER_NOT_FOUND_MSG);
         }
     }
 
-    public List<User> getAllUsers() {
-        List<User> users = userRepository.findAllByUserRole(UserRole.USER);
-        if (users.isEmpty()) {
-            throw new ApplicationCustomException(HttpStatus.NOT_FOUND, "NO_USERS_FOUND", "No Users Found");
+    public User getCurrentUser() {
+        try {
+            SecurityContext securityContext = SecurityContextHolder.getContext();
+            if (securityContext != null && securityContext.getAuthentication() != null) {
+                Object principal = securityContext.getAuthentication().getPrincipal();
+                if (principal instanceof UserData userData) {
+                    String username = userData.getUsername();
+                    Optional<User> optionalUser = userRepository.findByUsername(username);
+                    if (optionalUser.isPresent()) {
+                        return optionalUser.get();
+                    } else {
+                        throw new ApplicationCustomException(HttpStatus.NOT_FOUND, USER_NOT_FOUND_CODE, USER_NOT_FOUND_MSG);
+                    }
+                } else {
+                    throw new ApplicationCustomException(HttpStatus.UNAUTHORIZED, "INVALID_PRINCIPAL", "Invalid Principal");
+                }
+            } else {
+                throw new ApplicationCustomException(HttpStatus.UNAUTHORIZED, "SECURITY_CONTEXT_IS_NULL", "Security Context is Null");
+            }
+        } catch (Exception e) {
+            throw new ApplicationCustomException(HttpStatus.UNAUTHORIZED, "INVALID_USER", e.getMessage());
         }
-        return users;
     }
 }
